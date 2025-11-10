@@ -1,37 +1,82 @@
-package com.example.roomdemo
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.roomdemo.ui.theme.RoomDemoTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            RoomDemoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ScreenSetup(modifier = Modifier.padding(innerPadding))
-                }
-            }
-        }
+@Composable
+fun TitleRow(head1: String, head2: String, head3: String) {
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.primary)
+            .fillMaxWidth()
+            .padding(5.dp)
+    ) {
+        Text(
+            head1,
+            color = Color.White,
+            modifier = Modifier.weight(0.1f)
+        )
+        Text(
+            head2,
+            color = Color.White,
+            modifier = Modifier.weight(0.2f)
+        )
+        Text(
+            head3,
+            color = Color.White,
+            modifier = Modifier.weight(0.2f)
+        )
     }
 }
 
 @Composable
-fun ScreenSetup(modifier: Modifier = Modifier) {
-    MainScreen(modifier)
+fun ProductRow(id: Int, name: String, quantity: Int) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+    ) {
+        Text(
+            id.toString(),
+            modifier = Modifier.weight(0.1f)
+        )
+        Text(
+            name,
+            modifier = Modifier.weight(0.2f)
+        )
+        Text(
+            quantity.toString(),
+            modifier = Modifier.weight(0.2f)
+        )
+    }
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-
+fun CustomTextField(
+    title: String,
+    textState: String,
+    onTextChange: (String) -> Unit,
+    keyboardType: androidx.compose.ui.text.input.KeyboardType
+) {
+    OutlinedTextField(
+        value = textState,
+        onValueChange = { onTextChange(it) },
+        label = { Text(title) },
+        singleLine = true,
+        modifier = Modifier.padding(10.dp),
+        textStyle = TextStyle(
+            fontWeight = FontWeight.Bold,
+            fontSize = 30.sp
+        )
+    )
 }
