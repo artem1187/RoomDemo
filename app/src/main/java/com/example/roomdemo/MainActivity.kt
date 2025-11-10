@@ -238,11 +238,11 @@ fun MainScreen(
         ) {
             // Кнопка Добавить
             Button(onClick = {
-                if (productQuantity.isNotEmpty()) {
+                if (productQuantity.isNotEmpty() && productName.isNotEmpty()) {
                     viewModel.insertProduct(
                         Product(
                             productName,
-                            productQuantity.toInt()
+                            productQuantity.toIntOrNull() ?: 0
                         )
                     )
                     searching = false
@@ -256,19 +256,23 @@ fun MainScreen(
 
             // Кнопка Поиск
             Button(onClick = {
-                searching = true
-                viewModel.findProduct(productName)
+                if (productName.isNotEmpty()) {
+                    searching = true
+                    viewModel.findProduct(productName)
+                }
             }) {
                 Text("Search")
             }
 
             // Кнопка Удалить
             Button(onClick = {
-                searching = false
-                viewModel.deleteProduct(productName)
-                // Очистка полей после удаления
-                productName = ""
-                productQuantity = ""
+                if (productName.isNotEmpty()) {
+                    searching = false
+                    viewModel.deleteProduct(productName)
+                    // Очистка полей после удаления
+                    productName = ""
+                    productQuantity = ""
+                }
             }) {
                 Text("Delete")
             }
