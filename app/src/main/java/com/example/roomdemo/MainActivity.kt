@@ -1,82 +1,82 @@
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+package com.example.roomdemo
+
+import android.app.Application
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalContext
+import com.example.roomdemo.ui.theme.RoomDemoTheme
 
-@Composable
-fun TitleRow(head1: String, head2: String, head3: String) {
-    Row(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
-            .fillMaxWidth()
-            .padding(5.dp)
-    ) {
-        Text(
-            head1,
-            color = Color.White,
-            modifier = Modifier.weight(0.1f)
-        )
-        Text(
-            head2,
-            color = Color.White,
-            modifier = Modifier.weight(0.2f)
-        )
-        Text(
-            head3,
-            color = Color.White,
-            modifier = Modifier.weight(0.2f)
-        )
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            RoomDemoTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    val owner = LocalViewModelStoreOwner.current
+                    owner?.let {
+                        val viewModel: MainViewModel = viewModel(
+                            it,
+                            "MainViewModel",
+                            MainViewModelFactory(
+                                LocalContext.current.applicationContext as Application
+                            )
+                        )
+                        ScreenSetup(
+                            modifier = Modifier.padding(innerPadding),
+                            viewModel = viewModel
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ViewModel Factory класс
+class MainViewModelFactory(val application: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MainViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 
 @Composable
-fun ProductRow(id: Int, name: String, quantity: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp)
-    ) {
-        Text(
-            id.toString(),
-            modifier = Modifier.weight(0.1f)
-        )
-        Text(
-            name,
-            modifier = Modifier.weight(0.2f)
-        )
-        Text(
-            quantity.toString(),
-            modifier = Modifier.weight(0.2f)
-        )
-    }
-}
-
-@Composable
-fun CustomTextField(
-    title: String,
-    textState: String,
-    onTextChange: (String) -> Unit,
-    keyboardType: androidx.compose.ui.text.input.KeyboardType
+fun ScreenSetup(
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel
 ) {
-    OutlinedTextField(
-        value = textState,
-        onValueChange = { onTextChange(it) },
-        label = { Text(title) },
-        singleLine = true,
-        modifier = Modifier.padding(10.dp),
-        textStyle = TextStyle(
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp
-        )
+    val allProducts by viewModel.allProducts.observeAsState(listOf())
+    val searchResults by viewModel.searchResults.observeAsState(listOf())
+
+    MainScreen(
+        modifier = modifier,
+        allProducts = allProducts,
+        searchResults = searchResults,
+        viewModel = viewModel
     )
+}
+
+@Composable
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    allProducts: List<Product>,
+    searchResults: List<Product>,
+    viewModel: MainViewModel
+) {
+
 }
